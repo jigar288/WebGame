@@ -1,23 +1,37 @@
-
+<!DOCTYPE html>
 <html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Hangman</title>
+
+</head>
+
+<body>
+
+  <html>
+
   <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <!-- Material Design Lite -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
     <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
     <!-- Material Design icon font -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel= "stylesheet" href="/resources/game.css"/>
-    <script src = "/resources/game.js"></script>
+    <link rel="stylesheet" href="/resources/game.css" />
+    <script src="/resources/game.js"></script>
 
   </head>
+
   <body>
     <!-- Always shows a header, even in smaller screens. -->
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
       <header class="mdl-layout__header">
         <div class="mdl-layout__header-row">
           <!-- Title -->
-          <span class="mdl-layout-title">Title</span>
+          <span class="mdl-layout-title">HANGMAN</span>
           <!-- Add spacer, to align navigation to the right -->
           <div class="mdl-layout-spacer"></div>
           <!-- Navigation. We hide it in small screens. -->
@@ -30,36 +44,68 @@
         </div>
       </header>
       <div class="mdl-layout__drawer">
-        <span class="mdl-layout-title">Title</span>
+        <span class="mdl-layout-title">Hangman</span>
         <nav class="mdl-navigation">
-          <a class="mdl-navigation__link" href="">Link</a>
-          <a class="mdl-navigation__link" href="">Link</a>
-          <a class="mdl-navigation__link" href="">Link</a>
-          <a class="mdl-navigation__link" href="">Link</a>
+          <a class="mdl-navigation__link" href="/sign">Sign In/Out</a>
+          <a class="mdl-navigation__link" href="/home">Home</a>
+          <a class="mdl-navigation__link" href="/highscore?gamescore=0&amp;name=defualt">High Scores</a>
+          <a class="mdl-navigation__link" href="/aboutus">About Us</a>
         </nav>
       </div>
       <main class="mdl-layout__content">
-        <div class="page-content"><!-- Your content goes here -->
+        <div class="page-content">
+          <!-- Your content goes here -->
 
 
-          <div id = "container">
-            <p id = "lives"> You have 5 lives left! </p>
+          <div id="container">
             <br>
-            <br>
-            <div id = "letters">
-              <p id="correctguess"></p>
-              <!-- <p id = "spaces"></p> -->
-            {% for letter in letters %}
-             <button class = "letter" type="button" id = "{{letter}}btn" value = "{{letter}}"> {{letter}} </button>
-             {%endfor%}
+            <form id = "form" action ="/highscore" method= "post">
+         <input name= "gamescore" type="number" id="gettingscore" value="">
 
-           </br>
-           </br>
-           </br>
-            <button id = "hint" type="button"> HINT </button>
-            <button id = "playagain" type = "button"> PLAY AGAIN! </button>
-          </div>
+
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+          <input name = "name" type = "text" class="mdl-textfield__input" type="text" id="sample1">
+          <label class="mdl-textfield__label" for="sample1">Type a name to submit your score</label>
         </div>
+        <input class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" type= "submit">
+
+
+      </form>
+
+            <p align="center">
+              <img id="original" src="resources/bodyParts/1original.png" width=30% height=30%/>
+              <img id="head" src="resources/bodyParts/2head.png" width=30% height=30%/>
+              <img id="body" src="resources/bodyParts/3body.png" width=30% height=30%/>
+              <img id="leftarm" src="resources/bodyParts/4leftarm.png" width=30% height=30%/>
+              <img id="rightarm" src="resources/bodyParts/5rightarm.png" width=30% height=30%/>
+              <img id="rightleg" src="resources/bodyParts/6rightleg.png" width=30% height=30%/>
+              <img id="leftleg" src="resources/bodyParts/7leftleg.png" width=30% height=30%/>
+              <img id="eyes" src="resources/bodyParts/8eyes.png" width=30% height=30%/>
+              <img id="sadface" src="resources/bodyParts/9sadface.png" width=30% height=30%/>
+            </p>
+            <div class="userlives"> You have <span id="lives"></span> lives left! </div>
+
+            <p id="winner"></p>
+            <br>
+            <p id="wrongguess"></p>
+            <br>
+            <div id="letters">
+              <p id="correctguess"></p>
+              {% for letter in letters %}
+              <button type="button" id="{{letter}}btn" value="{{letter}}"> {{letter}} </button> {%endfor%}
+              <br>
+              <br>
+              <button id="hint" type="button" value="hintclicked"> HINT </button>
+              <button id="playagain" type="button" value="Refresh Page" onClick="window.location.reload()"> PLAY AGAIN! </button>
+              <span id="hintrevealed"> Hint: The category is  <span id="category"></span>!</span>
+
+            </div>
+          </div>
+
+
+
+
+
 
 
 
@@ -69,4 +115,10 @@
       </main>
     </div>
   </body>
+
+  </html>
+
+
+</body>
+
 </html>

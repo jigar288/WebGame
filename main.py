@@ -16,10 +16,13 @@
 #
 import webapp2
 import jinja2
+from google.appengine.ext import ndb
 import os
 from google.appengine.api import users
+global name
 
 import string
+import time
 
 
 jinja_environment = jinja2.Environment(
@@ -30,34 +33,27 @@ class MainHandler(webapp2.RequestHandler):
 
     def get(self):
         user = users.get_current_user()
+        login_url = users.create_login_url('/home')
+        logout_url = users.create_logout_url('/home')
         if user:
             nickname = user.nickname()
-            logout_url = users.create_logout_url('/home')
-            greeting = 'Welcome, {}! (<a href="{}">sign out</a>)'.format(
-                nickname, logout_url)
+            firstletter = nickname[0]
+            greeting = 'Welcome, {}! (<a href="{}">sign out</a>)'.format(nickname, logout_url)
         else:
-            login_url = users.create_login_url('/home')
             greeting = '<a href="%s">Sign in</a>' % (login_url)
+            firstletter = ''
+
         my_template = jinja_environment.get_template("templates/home.html")
-        render_data = {
-        'signin' : login_url
+        render_dict = {
+            'greeting' : greeting,
+            'firstletter' : firstletter
+
         }
-        self.response.write(my_template.render(render_data))
-
-
-
-        self.response.write(
-            '<html><body>{}</body></html>'.format(greeting))
-
+        self.response.write(my_template.render(render_dict))
 
 
 
 class HangmanHandler(webapp2.RequestHandler):
-    # def initialize(self):
-    #     words = ["dog", "cat", "google", "spratt"]
-    #     num_guess = 0;
-    #     guess = ""
-
     def get(self):
         render_dict = {
         "letters": string.ascii_uppercase
@@ -66,16 +62,30 @@ class HangmanHandler(webapp2.RequestHandler):
         self.response.write(my_template.render(render_dict))
 
 class HighScoreHandler(webapp2.RequestHandler):
+    def writetemplate(self):
+        my_template = jinja_environment.get_template("templates/highscore.html")
+        getting_all_results = HighScoreModel.query().order(-HighScoreModel.score).fetch()
+        render_data = {
+            'users' : getting_all_results
+        }
+        self.response.write(my_template.render(render_data))
     def get(self):
-        my_template = jinja_environment.get_template("templates/highschore.html")
-        self.response.write(my_template.render())
+        self.writetemplate()
+    def post(self):
+        username = self.request.get("name")
+        userscore =int(self.request.get("gamescore"))
+        my_usernames = HighScoreModel(username = username, score= userscore)
+        my_usernames.put()
+        time.sleep(2)
+        self.writetemplate()
 
 class AboutUsHandler(webapp2.RequestHandler):
     def get(self):
         my_template = jinja_environment.get_template("templates/aboutus.html")
         self.response.write(my_template.render())
 
-class MainPage(webapp2.RequestHandler):
+
+class SignHandler(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
         if user:
@@ -86,16 +96,13 @@ class MainPage(webapp2.RequestHandler):
         else:
             login_url = users.create_login_url('/home')
             greeting = '<a href="%s">Sign in</a>' % (login_url)
-        my_template = jinja_environment.get_template("templates/home.html")
-        render_data = {
-        'signin' : login_url
-        }
-        self.response.write(my_template.render(render_data))
+        my_template = jinja_environment.get_template("templates/sign.html")
         self.response.write(
             '<html><body>{}</body></html>'.format(greeting))
 
-
-
+class HighScoreModel(ndb.Model):
+    username = ndb.StringProperty()
+    score = ndb.IntegerProperty()
 
 
 app = webapp2.WSGIApplication([
@@ -103,6 +110,7 @@ app = webapp2.WSGIApplication([
     ('/hangman', HangmanHandler),
     ('/highscore', HighScoreHandler),
     ('/aboutus', AboutUsHandler),
-    ('/signin', MainPage)
+    ('/sign', SignHandler)
+
 
 ], debug=True)
